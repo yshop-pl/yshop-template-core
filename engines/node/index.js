@@ -5,6 +5,7 @@ const express = require('express')
 const {join} = require('path')
 const axios = require('axios')
 const path = require("node:path");
+const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -16,6 +17,7 @@ const template = {
 const publicDir = join(__dirname, "..", '..', 'public')
 app.use(express.static(publicDir))
 app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.all("/proxy", async(req, res) => {
     const uri = req.query['uri']
@@ -55,6 +57,19 @@ app.all("/proxy", async(req, res) => {
             code: code
         })
     }
+})
+
+app.all('/install', async(req, res) => {
+    if (req.method === 'GET') {
+        res.sendFile(publicDir + '/install/index.html')
+        return
+    }
+    const data = req.body
+    if (!data.apiKey || !data.apiUrl || !data.templateId) {
+        res.redirect('/install')
+        return
+    }
+    res.send(req.body)
 })
 
 app.get('/**', (req, res) => {

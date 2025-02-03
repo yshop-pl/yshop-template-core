@@ -1,0 +1,2 @@
+echo "Downloading template ....";
+pause
