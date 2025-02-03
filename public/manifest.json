@@ -1,0 +1,23 @@
+{
+  "src/app.js": {
+    "file": "app.js",
+    "name": "js",
+    "src": "src/app.js",
+    "isEntry": true,
+    "css": [
+      "js.css"
+    ],
+    "assets": [
+      "skin-render.png",
+      "background.png"
+    ]
+  },
+  "src/assets/images/background.png": {
+    "file": "background.png",
+    "src": "src/assets/images/background.png"
+  },
+  "src/assets/images/skin-render.png": {
+    "file": "skin-render.png",
+    "src": "src/assets/images/skin-render.png"
+  }
+}
