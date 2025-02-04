@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ładowanie...</title>
+    <script src="http://localhost:5173/@vite/client"></script>
+    <link rel="stylesheet" href="<%= assets_path%>js.css">
+    <script onerror="document.getElementById('error').style.display = 'block'" type="module" src="<%= assets_path%>app.js"></script>
+</head>
+<body>
+<div id="app">
+    <p style="display: none" id="error">Szablon nie został poprawnie zbudowany!</p>
+</div>
+</body>
+</html>

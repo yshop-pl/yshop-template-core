@@ -1,0 +1,39 @@
+{
+  "name": "emerald",
+  "version": "1.0.0",
+  "authors": ["Braspi"],
+  "config": {
+    "address": "hypixel.net",
+    "status": true,
+    "title_schema": "yShop.pl - {name}",
+    "title": "yShop.pl",
+    "administration": [
+      {
+        "name": "Braspi_",
+        "role": "Administrator"
+      },
+      {
+        "name": "zqr12",
+        "role": "Administrator"
+      },
+      {
+        "name": "drazemarynarze",
+        "role": "Moderator"
+      }
+    ],
+    "socialmedia": [
+      {
+        "icon": "tabler:brand-discord",
+        "href": "https://discord.com"
+      },
+      {
+        "icon": "tabler:brand-twitter",
+        "href": "https://twitter.com"
+      },
+      {
+        "icon": "tabler:brand-facebook",
+        "href": "https://facebook.com"
+      }
+    ]
+  }
+}
