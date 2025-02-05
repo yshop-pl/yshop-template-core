@@ -7,19 +7,32 @@ const bodyParser = require('body-parser')
 const fs = require('node:fs')
 const app = express()
 
-const template = {
-    name: "TEST",
-    version: '1.0.0'
-}
-
-app.set('view engine', 'ejs')
-
 const publicDir = join(__dirname, "template", "build")
-app.use(express.static(publicDir))
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.all("/proxy", async(req, res) => {
+try {
+    const file = fs.readFileSync(join(__dirname, 'template', 'template.json'))
+    const data = JSON.parse(file.toString("utf-8"))
+    app.use(express.static(publicDir))
+    app.all('/proxy', async(req, res) => proxy(req,res, data))
+    app.get('/**', renderTemplate)
+} catch (err) {
+    app.all('/**', async(req, res) => {
+        if (req.method === 'GET') {
+            res.sendFile(__dirname + "/install.html")
+            return
+        }
+        const data = req.body
+        if (!data.apiKey || !data.apiUrl || !data.templateId) {
+            res.redirect('/install')
+            return
+        }
+        res.send(req.body)
+    })
+}
+
+async function proxy(req, res, template) {
     const uri = req.query['uri']
     try {
         const result = await axios.request({
@@ -35,8 +48,8 @@ app.all("/proxy", async(req, res) => {
         })
         res.json(result.data)
     } catch (err) {
+        console.log(err)
         const code = err.response ? err.response.status : 500
-        console.log(err.response.data)
         const message = () => {
             switch (code) {
                 case 400:
@@ -57,22 +70,8 @@ app.all("/proxy", async(req, res) => {
             code: code
         })
     }
-})
-
-app.all('/install', async(req, res) => {
-    if (req.method === 'GET') {
-        res.sendFile(publicDir + '/install/index.html')
-        return
-    }
-    const data = req.body
-    if (!data.apiKey || !data.apiUrl || !data.templateId) {
-        res.redirect('/install')
-        return
-    }
-    res.send(req.body)
-})
-
-app.get('/**', async(req, res) => {
+}
+async function renderTemplate(req, res) {
     const viteUrl = `${process.env.VITE_ORIGIN}:${process.env.VITE_PORT}`
     if (process.env.APP_ENVIRONMENT === 'development') {
         if (req.path.startsWith("/src/assets")) {
@@ -87,7 +86,7 @@ app.get('/**', async(req, res) => {
         return
     }
     res.sendFile(join(__dirname, "template", "build", "index.html"))
-})
+}
 
 const PORT = process.env.APP_PORT || 3000
 app.listen(PORT, () => {

@@ -1,6 +1,0 @@
-node_modules
-package-lock.json
-engines/node/node_modules
-engines/node/package-lock.json
-engines/php/vendor
-engines/php/composer.lock

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalator Aplikacji</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="flex flex-col items-center justify-center h-screen bg-gray-100">
+<div id="app">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center w-[650px]">
+        <div v-if="message" class="bg-red-100 text-red-800 p-3 rounded border border-red-300 mb-4">❌ {{message}}</div>
+        <h2 class="text-xl font-semibold mb-4">Instalator Szablonu</h2>
+
+        <div class="mb-4">
+            <input type="text" v-model="form.apiUrl" disabled class="w-full p-2 border border-gray-300 rounded bg-gray-100 text-gray-500 cursor-not-allowed">
+        </div>
+        <div class="flex items-center justify-center gap-2 mb-4">
+            <input type="text" v-model="form.apiKey" placeholder="Wprowadź klucz licencyjny" class="flex-1 p-2 border border-gray-300 rounded">
+            <button @click="checkCredentials" class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 transition">
+                Sprawdź
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 justify-center mt-4" id="templates">
+            <template v-for="item in templates">
+                <div @click="form.selected = item.id"
+                     :class="[form.selected ? 'border-green-500 bg-green-100' : '']"
+                     class="bg-lightDiv rounded-lg p-6 flex flex-2 flex-col gap-1 font-medium border border-black border-opacity-10 cursor-pointer">
+                    <img :src="item.imageUrl" class="rounded-xl mb-4" alt="">
+                    <h1 class="font-bold text-xl">{{ item.name }}</h1>
+                </div>
+            </template>
+        </div>
+        <form action="/install" method="post">
+            <input type="hidden" name="apiKey" :value="form.apiKey">
+            <input type="hidden" name="apiUrl" :value="form.apiUrl">
+            <input type="hidden" name="templateId" :value="form.selected">
+            <button type="submit" v-if="form.selected" class="w-full mt-4 p-2 bg-green-500 text-white rounded hover:bg-green-700 transition">
+                Pobierz i zaintaluj
+            </button>
+        </form>
+        <div class="mt-4 text-xs text-gray-600">&copy; 2025 yshop.pl. Wszelkie prawa zastrzeżone.</div>
+    </div>
+</div>
+<script>
+    const { createApp, ref, reactive } = Vue;
+
+    createApp({
+        setup() {
+            const message = ref()
+            const form = reactive({
+                apiUrl: 'https://api.yshop.pl/v4',
+                apiKey: '5W135UTYC2D3BEPGEMAC7W2TWIATA4BO',
+                selected: '8d72968b-c39c-11ef-bc1b-b42e994f8e15'
+            })
+            const templates = ref([])
+
+            async function checkCredentials() {
+                try {
+                    const response = await fetch(`${form.apiUrl}/public/get-license-templates?apikey=${form.apiKey}`)
+                    const data = await response.json()
+                    if (response.status >= 400) {
+                        message.value = data.message
+                        return
+                    }
+                    if (!Array.isArray(data) || data.length === 0) {
+                        message.value = 'Nie udało się pobrać szablonów lub właściciel tego klucza nie ma żadnych dostępnych'
+                    }
+                    templates.value = data
+                    message.value = ''
+                } catch (err) {
+                    message.value = err.message
+                    console.log(err)
+                }
+            }
+
+            return {
+                form,
+                message,
+                templates,
+                checkCredentials
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
+</html>
