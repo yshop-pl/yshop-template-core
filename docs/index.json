@@ -1,1 +1,9 @@
-{}
+[
+  {
+    "id": "yshop-template-emerald",
+    "name": "Emerald",
+    "price": 50,
+    "description": "Lorem ipsum...",
+    "imageUrl": "https://google.com"
+  }
+]
